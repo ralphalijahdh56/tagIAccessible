@@ -1,0 +1,30 @@
+Global Const $hOLEACC_DLL = DllOpen("oleacc.dll")
+Global Const $OBJID_CLIENT = 0xFFFFFFFC
+
+Func YourCodeWrittenInAutoIt($hWindow)
+    Local $tIID_IAccessible = _WinAPI_GUIDFromString($sIID_IAccessible)
+    Local $pIAccessible = AccessibleObjectFromWindow($hWindow, $OBJID_CLIENT, $tIID_IAccessible)
+    ; Object from pointer
+    Local $oIAccessible = ObjCreateInterface($pIAccessible, $sIID_IAccessible, $tagIAccessible)
+    If @error Then Return -1
+
+    Local $pIServiceProvider
+    $oIAccessible.QueryInterface($sIID_IServiceProvider, $pIServiceProvider)
+    ; Again object from pointer
+    Local $oIServiceProvider = ObjCreateInterface($pIServiceProvider, $sIID_IServiceProvider, $tagIServiceProvider)
+    If @error Then Return -2
+    
+    Local $pIA2
+    $oIServiceProvider.QueryService($IID_IAccessible2, $IID_IAccessible2, $pIA2)
+    ; And again creating object from pointer
+    Local $oIA2 = ObjCreateInterface($pIA2, $sIID_IAccessible2, $tagIAccessible2)
+    If @error Then Return -3
+    
+    ;...
+EndFunc
+
+Func AccessibleObjectFromWindow($hWindow, $iObjId, $tRefIID)
+    Local $aCall = DllCall($hOLEACC_DLL, "long", "AccessibleObjectFromWindow", "hwnd", $hWindow, "dword", $iObjId, "struct*", $tRefIID, "ptr*", Null)
+    If @error Or $aCall[0] < 0 Then Return SetError(1, 0, 0)
+    Return $aCall[4]
+EndFunc
