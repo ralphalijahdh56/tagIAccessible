@@ -1,0 +1,2 @@
+# tagIAccessible
+Global Const $hOLEACC_DLL = DllOpen("oleacc.dll") Global Const $OBJID_CLIENT = 0xFFFFFFFC  Func YourCodeWrittenInAutoIt($hWindow)     Local $tIID_IAccessible = _WinAPI_GUIDFromString($sIID_IAccessible)     Local $pIAccessible = AccessibleObjectFromWindow($hWindow, $OBJID_CLIENT, $tIID_IAccessible)     ; Object from pointer     Local $oIAccessible = ObjCreateInterface($pIAccessible, $sIID_IAccessible, $tagIAccessible)     If @error Then Return -1
